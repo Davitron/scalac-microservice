@@ -37,7 +37,6 @@ pipeline{
     agent any
         environment {
             IMAGE_NAME = image_name
-            CONTAINER_NAME = 
         }
     stages{
 
