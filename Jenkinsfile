@@ -35,24 +35,26 @@ def image_name  = get_image_name branch_type
 
 pipeline{
     agent any
-        environment {
-            IMAGE_NAME = image_name
-        }
+        // environment {
+        //     IMAGE_NAME = image_name
+        // }
     stages{
 
         stage("build image"){
             steps{
-                sh "docker build -t ${IMAGE_NAME} ."
+                sh "docker build -t ${image_name} ."
             }
         }
 
         stage("deploy") {
             steps {
                 sh '''
-                    IMAGE_ID=\$(docker images $IMAGE_NAME --format "{{.ID}}")
-                    if [ ! "\$(docker ps -aq -f ancestor=$IMAGE_NAME )" ] ; then
-                        docker rm "$(docker ps -aq -f status=exited -f ancestor=\${IMAGE_NAME})"
-                        docker run -d ${IMAGE_NAME}
+                    IMAGE_ID=\$(docker images ${image_name} --format "{{.ID}}")
+                    if [ ! "\$(docker ps -aq -f ancestor=${image_name} )" ] ; then
+                        docker run -d ${image_name}
+                    else
+                        docker rm "$(docker ps -aq -f status=exited -f ancestor=\${image_name})"
+                        docker run -d ${image_name}
                     fi
                 '''
             }
