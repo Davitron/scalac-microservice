@@ -19,7 +19,7 @@ def get_branch_type(String branch_name) {
     }
 }
 
-def get_image_name(Strinf branch_type_name) {
+def get_image_name(String branch_type_name) {
     if (branch_type_name == "develop") {
         return "microservice:dev"
     } else if (branch_type_name == "master") {
@@ -48,13 +48,13 @@ pipeline{
 
         stage("deploy") {
             steps {
-                sh """
-                    IMAGE_ID=\$(docker images ${IMAGE_NAME} --format "{{.ID}}")
-                    if [ ! "\$(docker ps -aq -f ancestor=\${IMAGE_NAME})" ] ; then
+                sh '''
+                    IMAGE_ID=\$(docker images $IMAGE_NAME --format "{{.ID}}")
+                    if [ ! "\$(docker ps -aq -f ancestor=$IMAGE_NAME )" ] ; then
                         docker rm "$(docker ps -aq -f status=exited -f ancestor=\${IMAGE_NAME})"
                         docker run -d ${IMAGE_NAME}
                     fi
-                """
+                '''
             }
         }
     }
