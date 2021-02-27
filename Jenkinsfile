@@ -37,7 +37,6 @@ pipeline{
     agent any
         environment {
             IMAGE_NAME = image_name
-            CONTAINER_NAME = 
         }
     stages{
 
@@ -50,8 +49,8 @@ pipeline{
         stage("deploy") {
             steps {
                 sh """
-                    IMAGE_ID=$(docker images ${IMAGE_NAME} --format "{{.ID}}")
-                    if [ ! "$(docker ps -aq -f ancestor=${IMAGE_NAME})" ] ; then
+                    IMAGE_ID=\$(docker images ${IMAGE_NAME} --format "{{.ID}}")
+                    if [ ! "\$(docker ps -aq -f ancestor=${IMAGE_NAME})" ] ; then
                         docker rm "$(docker ps -aq -f status=exited -f ancestor=${IMAGE_NAME})"
                         docker run -d ${IMAGE_NAME}
                     fi
