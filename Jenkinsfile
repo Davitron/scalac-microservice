@@ -26,7 +26,8 @@ pipeline{
     stages{
         stage("build image"){
             steps{
-                sh "sudo docker build -t microservice ."
+                sh "whoami"
+                sh "docker build -t microservice ."
             }
         }
     }
