@@ -2,7 +2,10 @@ from flask import Flask, jsonify, request
 import requests, os
 
 app = Flask(__name__)
+
 app_port = os.environ['PORT']
+env = os.environ['ENV']
+
 
 def process(joke):
     formatted = {}
@@ -15,7 +18,7 @@ def process(joke):
 
 @app.route('/')
 def hello():
-    return "Microservice is active!!"
+    return "Microservice is active on {}!!".format(env)
 
 @app.route('/getjokes')
 def getJokes():
