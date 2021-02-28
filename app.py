@@ -17,14 +17,9 @@ def process(joke):
 def hello():
     return "Microservice is active!!"
 
-@app.route('/hello')
-def message():
-    return "HELLO USER now"
-
 @app.route('/getjokes')
 def getJokes():
     jokes_count = request.args.get("count") or 100
-
     s = requests.Session()
     response = []
     with s.get("http://bash.org.pl/text", headers=None, stream=True) as resp:
@@ -39,7 +34,7 @@ def getJokes():
                 joke.clear()
                 if len(response) == int(jokes_count):
                    break 
-    return { "jokes": response }
+    return { "jokes": response, "count": len(response) }
                 
 
 
