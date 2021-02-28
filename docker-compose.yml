@@ -20,7 +20,7 @@ services:
       dockerfile: Dockerfile
     environment: 
       - PORT=${PROD_PORT}
-  norm:
+  release:
     image: microservice:release
     container_name: release
     build:
