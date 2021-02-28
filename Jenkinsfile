@@ -54,7 +54,7 @@ pipeline{
             when {
                 anyOf {
                     branch "master";
-                    branch "staging";
+                    branch "develop";
                 }
             }
             steps {
