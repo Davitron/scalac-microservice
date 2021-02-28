@@ -21,8 +21,8 @@ services:
     environment: 
       - PORT=${PROD_PORT}
   norm:
-    image: scalac:latest
-    container_name: norm
+    image: microservice:release
+    container_name: release
     build:
       context: .
       dockerfile: Dockerfile
