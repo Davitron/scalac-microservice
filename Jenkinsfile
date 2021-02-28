@@ -30,7 +30,7 @@ def get_container_name(String branch_type_name) {
 }
 
 def branch_type = get_branch_type "${env.BRANCH_NAME}"
-def image_name  = get_image_name branch_type
+def container_name  = get_container_name branch_type
 
 
 pipeline{
@@ -58,8 +58,6 @@ pipeline{
                 }
             }
             steps {
-                def container_name = get_container_name
-
                 sh '''
                     export DEV_PORT=5001
                     export PROD_PORT=5002
