@@ -1,38 +1,3 @@
-def get_branch_type(String branch_name) {
-    def dev_pattern = ".*develop"
-    def release_pattern = ".*release/.*"
-    def feature_pattern = ".*feature/.*"
-    def hotfix_pattern = ".*hotfix/.*"
-    def master_pattern = ".*master"
-    if (branch_name =~ dev_pattern) {
-        return "develop"
-    } else if (branch_name =~ release_pattern) {
-        return "release"
-    } else if (branch_name =~ master_pattern) {
-        return "master"
-    } else if (branch_name =~ feature_pattern) {
-        return "feature"
-    } else if (branch_name =~ hotfix_pattern) {
-        return "hotfix"
-    } else {
-        return null;
-    }
-}
-
-def get_container_name(String branch_type_name) {
-    if (branch_type_name == "develop") {
-        return "dev"
-    } else if (branch_type_name == "master") {
-        return "prod"
-    } else {
-        return "release"
-    }
-}
-
-def branch_type = get_branch_type "${env.BRANCH_NAME}"
-def container_name  = get_container_name branch_type
-
-
 pipeline{
     agent any
     stages{
@@ -54,14 +19,22 @@ pipeline{
             when {
                 anyOf {
                     branch "master";
-                    branch "staging";
+                    branch "develop";
                 }
             }
             steps {
                 sh '''
                     export DEV_PORT=5001
                     export PROD_PORT=5002
-                    docker-compose up --build --force-recreate --no-deps -d ${container_name}
+                    if [ $GIT_BRANCH = "develop" ] ; then
+                        export CONTAINER=dev
+                    elif [ $GIT_BRANCH = "master" ] ; then
+                        export CONTAINER=prod
+                    else
+                        export CONTAINER=release
+                    fi
+
+                    docker-compose up --build --force-recreate --no-deps -d ${CONTAINER}
                 '''
             }
         }
