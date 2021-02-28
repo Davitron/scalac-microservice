@@ -1,7 +1,8 @@
 from flask import Flask, jsonify, request
-import requests
+import requests, os
 
 app = Flask(__name__)
+app_port = os.environ['PORT']
 
 def process(joke):
     formatted = {}
@@ -14,12 +15,15 @@ def process(joke):
 
 @app.route('/')
 def hello():
-    return "Hello World!"
+    return "Microservice is active!!"
+
+@app.route('/hello')
+def message():
+    return "HELLO USER now"
 
 @app.route('/getjokes')
 def getJokes():
     jokes_count = request.args.get("count") or 100
-    # print(jokes_count)
 
     s = requests.Session()
     response = []
@@ -40,4 +44,4 @@ def getJokes():
 
 
 if __name__ == '__main__':
-    app.run(port=5000)
+    app.run(port=app_port)

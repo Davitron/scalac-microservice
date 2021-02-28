@@ -1,0 +1,32 @@
+version: "3.7"
+services:
+  dev:
+    image: microservice:dev
+    container_name: dev
+    ports:
+      - ${DEV_PORT}:5001
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment: 
+      - PORT=${DEV_PORT}
+  prod:
+    image: microservice:prod
+    container_name: prod
+    ports:
+      - ${PROD_PORT}:5002
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment: 
+      - PORT=${PROD_PORT}
+  norm:
+    image: scalac:latest
+    container_name: norm
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    environment: 
+      - PORT=5000

@@ -5,7 +5,7 @@ def get_branch_type(String branch_name) {
     def hotfix_pattern = ".*hotfix/.*"
     def master_pattern = ".*master"
     if (branch_name =~ dev_pattern) {
-        return "dev"
+        return "develop"
     } else if (branch_name =~ release_pattern) {
         return "release"
     } else if (branch_name =~ master_pattern) {
@@ -19,13 +19,13 @@ def get_branch_type(String branch_name) {
     }
 }
 
-def get_image_name(String branch_type_name) {
+def get_container_name(String branch_type_name) {
     if (branch_type_name == "develop") {
-        return "microservice:dev"
+        return "dev"
     } else if (branch_type_name == "master") {
-        return "microservice:prod"
+        return "prod"
     } else {
-        return "microservice"
+        return "release"
     }
 }
 
@@ -35,27 +35,35 @@ def image_name  = get_image_name branch_type
 
 pipeline{
     agent any
-        // environment {
-        //     IMAGE_NAME = image_name
-        // }
     stages{
 
-        stage("build image"){
-            steps{
-                sh "docker build -t ${image_name} ."
+        stage("run test build") {
+            when {
+                branch "feature/*"
+            }
+            steps {
+                sh '''
+                    docker build -t service .
+                    echo "Build was successful"
+                    docker image rm service:latest
+                '''
             }
         }
 
         stage("deploy") {
+            when {
+                anyOf {
+                    branch "master";
+                    branch "staging";
+                }
+            }
             steps {
+                def container_name = get_container_name
+
                 sh '''
-                    IMAGE_ID=\$(docker images ${image_name} --format "{{.ID}}")
-                    if [ ! "\$(docker ps -aq -f ancestor=${image_name} )" ] ; then
-                        docker run -d ${image_name}
-                    else
-                        docker rm "$(docker ps -aq -f status=exited -f ancestor=\${image_name})"
-                        docker run -d ${image_name}
-                    fi
+                    export DEV_PORT=5001
+                    export PROD_PORT=5002
+                    docker-compose up --build --force-recreate --no-deps -d ${container_name}
                 '''
             }
         }
